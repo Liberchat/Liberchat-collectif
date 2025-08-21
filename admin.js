@@ -10,7 +10,7 @@ function log(message) {
 }
 
 // Vérification des droits admin via organisation GitHub
-async function checkAdminAccess() {
+function checkAdminAccess() {
     const currentUser = prompt('👤 Votre pseudo GitHub:');
     
     if (!currentUser) {
@@ -18,28 +18,15 @@ async function checkAdminAccess() {
         return false;
     }
     
-    try {
-        // Vérifier si l'utilisateur est collaborateur du repo
-        const response = await fetch(`https://api.github.com/repos/${ORG_NAME}/${REPO_NAME}/collaborators/${currentUser}`);
-        
-        if (response.status === 204) {
-            log(`✅ Accès admin accordé à ${currentUser} (collaborateur)`);
-            return true;
-        } else {
-            document.body.innerHTML = '<div style="text-align:center;padding:50px;color:#cc0000;font-size:2em;">❌ ACCÈS REFUSÉ<br><small>Vous devez être collaborateur du repo</small></div>';
-            return false;
-        }
-    } catch (error) {
-        // Fallback: liste des admins autorisés
-        const adminUsers = ['Liberchat', 'admin1', 'admin2']; // Ajoutez vos pseudos
-        
-        if (adminUsers.includes(currentUser)) {
-            log(`✅ Accès admin accordé à ${currentUser} (liste autorisée)`);
-            return true;
-        } else {
-            document.body.innerHTML = '<div style="text-align:center;padding:50px;color:#cc0000;font-size:2em;">❌ ACCÈS REFUSÉ<br><small>Non autorisé</small></div>';
-            return false;
-        }
+    // Liste des admins autorisés
+    const adminUsers = ['Liberchat', 'AnARCHIS12', 'admin1', 'admin2'];
+    
+    if (adminUsers.includes(currentUser)) {
+        log(`✅ Accès admin accordé à ${currentUser}`);
+        return true;
+    } else {
+        document.body.innerHTML = '<div style="text-align:center;padding:50px;color:#cc0000;font-size:2em;">❌ ACCÈS REFUSÉ<br><small>Pseudo non autorisé</small></div>';
+        return false;
     }
 }
 
@@ -247,9 +234,9 @@ function initializeAdmin() {
 }
 
 // Initialisation
-document.addEventListener('DOMContentLoaded', async function() {
+document.addEventListener('DOMContentLoaded', function() {
     // Vérifier l'accès admin avant tout
-    if (await checkAdminAccess()) {
+    if (checkAdminAccess()) {
         initializeAdmin();
     }
 });
