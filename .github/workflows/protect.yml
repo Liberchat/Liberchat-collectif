@@ -37,7 +37,7 @@ jobs:
     
     - name: Check malicious patterns
       run: |
-        MALICIOUS_PATTERNS=("rm -rf" "curl.*evil" "wget.*malware" "base64.*decode")
+        MALICIOUS_PATTERNS=("curl.*evil" "wget.*malware" "base64.*decode")
         
         for pattern in "${MALICIOUS_PATTERNS[@]}"; do
           if grep -r "$pattern" . --exclude-dir=.git 2>/dev/null; then
@@ -45,6 +45,12 @@ jobs:
             exit 1
           fi
         done
+        
+        # Vérifier rm -rf mais exclure ce fichier
+        if grep -r "rm -rf" . --exclude-dir=.git --exclude="protect.yml" 2>/dev/null; then
+          echo "❌ ALERTE: Pattern suspect rm -rf détecté"
+          exit 1
+        fi
         echo "✅ Aucun pattern malveillant détecté"
     
     - name: Validate workflow integrity
