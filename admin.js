@@ -19,22 +19,27 @@ async function checkAdminAccess() {
     }
     
     try {
-        // Vérifier si l'utilisateur est membre de l'organisation
-        const response = await fetch(`https://api.github.com/orgs/${ORG_NAME}/members/${currentUser}`);
+        // Vérifier si l'utilisateur est collaborateur du repo
+        const response = await fetch(`https://api.github.com/repos/${ORG_NAME}/${REPO_NAME}/collaborators/${currentUser}`);
         
-        if (response.status === 200) {
-            log(`✅ Accès admin accordé à ${currentUser} (membre de ${ORG_NAME})`);
+        if (response.status === 204) {
+            log(`✅ Accès admin accordé à ${currentUser} (collaborateur)`);
             return true;
-        } else if (response.status === 404) {
-            document.body.innerHTML = '<div style="text-align:center;padding:50px;color:#cc0000;font-size:2em;">❌ ACCÈS REFUSÉ<br><small>Vous devez être membre de l\'organisation ${ORG_NAME}</small></div>';
-            return false;
         } else {
-            document.body.innerHTML = '<div style="text-align:center;padding:50px;color:#cc0000;font-size:2em;">❌ ERREUR<br><small>Impossible de vérifier l\'appartenance</small></div>';
+            document.body.innerHTML = '<div style="text-align:center;padding:50px;color:#cc0000;font-size:2em;">❌ ACCÈS REFUSÉ<br><small>Vous devez être collaborateur du repo</small></div>';
             return false;
         }
     } catch (error) {
-        document.body.innerHTML = '<div style="text-align:center;padding:50px;color:#cc0000;font-size:2em;">❌ ERREUR<br><small>Problème de connexion API</small></div>';
-        return false;
+        // Fallback: liste des admins autorisés
+        const adminUsers = ['Liberchat', 'admin1', 'admin2']; // Ajoutez vos pseudos
+        
+        if (adminUsers.includes(currentUser)) {
+            log(`✅ Accès admin accordé à ${currentUser} (liste autorisée)`);
+            return true;
+        } else {
+            document.body.innerHTML = '<div style="text-align:center;padding:50px;color:#cc0000;font-size:2em;">❌ ACCÈS REFUSÉ<br><small>Non autorisé</small></div>';
+            return false;
+        }
     }
 }
 
