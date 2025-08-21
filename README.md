@@ -18,7 +18,7 @@
 3. **Attendez la validation** → L'équipe examine votre profil
 4. **Recevez l'invitation** → Si approuvé, invitation GitHub automatique
 
-### Pour les admins :
+### Pour les membres:
 1. **Candidature reçue** → Issue avec label `à-examiner`
 2. **Examinez le profil** → Compétences + vision idéologique
 3. **Décidez d'un clic** → Label `approuvé` ou `refusé`
