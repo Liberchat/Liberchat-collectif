@@ -65,7 +65,6 @@
 ### Modération :
 - Historique complet des candidatures
 - Possibilité de revert via Git
-- Exclusion possible des membres problématiques
 - Sauvegarde automatique du repo
 
 ## 📈 Statistiques
