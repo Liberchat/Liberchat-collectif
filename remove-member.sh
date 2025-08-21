@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Script pour retirer un admin à distance
-# Usage: ./remove-admin.sh PSEUDO_GITHUB
+# Script pour retirer un membre autogéré à distance
+# Usage: ./remove-member.sh PSEUDO_GITHUB
 
 if [ $# -eq 0 ]; then
     echo "❌ Usage: ./remove-admin.sh PSEUDO_GITHUB"

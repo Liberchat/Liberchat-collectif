@@ -1,31 +1,31 @@
-# 🛠️ Scripts de Gestion des Admins
+# 🛠️ Scripts de Gestion des Membres Autogérés
 
-## Ajout d'un Admin
+## Ajout d'un Membre Autogéré
 
 ```bash
-./add-admin.sh PSEUDO_GITHUB
+./add-member.sh PSEUDO_GITHUB
 ```
 
 **Exemple :**
 ```bash
-./add-admin.sh nouveauMembre
+./add-member.sh nouveauMembre
 ```
 
-## Suppression d'un Admin
+## Suppression d'un Membre Autogéré
 
 ```bash
-./remove-admin.sh PSEUDO_GITHUB
+./remove-member.sh PSEUDO_GITHUB
 ```
 
 **Exemple :**
 ```bash
-./remove-admin.sh ancienMembre
+./remove-member.sh ancienMembre
 ```
 
-## Liste Actuelle des Admins
+## Liste Actuelle des Membres Autogérés
 
 ```bash
-grep "adminUsers" admin.js
+grep "authorizedMembers" admin.js
 ```
 
 ## Fonctionnalités
@@ -45,4 +45,4 @@ grep "adminUsers" admin.js
 
 ---
 
-**⚠️ Réservé aux admins autogérés du collectif**
+**⚠️ Réservé aux membres autogérés du collectif**

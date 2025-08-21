@@ -10,7 +10,7 @@ function log(message) {
 }
 
 // Vérification des droits admin via organisation GitHub
-function checkAdminAccess() {
+function checkMemberAccess() {
     const currentUser = prompt('👤 Votre pseudo GitHub:');
     
     if (!currentUser) {
@@ -18,11 +18,11 @@ function checkAdminAccess() {
         return false;
     }
     
-    // Admins autogérés du collectif
-    const adminUsers = ['Liberchat', 'AnARCHIS12'];
+    // Membres autogérés du collectif
+    const authorizedMembers = ['Liberchat', 'AnARCHIS12'];
     
-    if (adminUsers.includes(currentUser)) {
-        log(`✅ Accès admin accordé à ${currentUser}`);
+    if (authorizedMembers.includes(currentUser)) {
+        log(`✅ Accès membre autogéré accordé à ${currentUser}`);
         return true;
     } else {
         document.body.innerHTML = '<div style="text-align:center;padding:50px;color:#cc0000;font-size:2em;">❌ ACCÈS REFUSÉ<br><small>Pseudo non autorisé</small></div>';
@@ -236,7 +236,7 @@ function initializeAdmin() {
 // Initialisation
 document.addEventListener('DOMContentLoaded', function() {
     // Vérifier l'accès admin avant tout
-    if (checkAdminAccess()) {
+    if (checkMemberAccess()) {
         initializeAdmin();
     }
 });
