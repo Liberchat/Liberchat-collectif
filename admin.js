@@ -40,6 +40,9 @@ async function loadStats() {
     try {
         // Simuler le chargement des stats via GitHub API
         const issues = await fetch(`https://api.github.com/repos/${ORG_NAME}/${REPO_NAME}/issues?state=all&per_page=100`);
+        if (!issues.ok) {
+            throw new Error(`HTTP ${issues.status}`);
+        }
         const issuesData = await issues.json();
         
         const candidates = issuesData.filter(issue => issue.title.includes('[INVITE]'));
@@ -72,8 +75,15 @@ async function loadCandidates() {
     container.innerHTML = '<p>Chargement...</p>';
     
     try {
-        const response = await fetch(`https://api.github.com/repos/${ORG_NAME}/${REPO_NAME}/issues?labels=à-examiner&state=open`);
-        const candidates = await response.json();
+        const response = await fetch(`https://api.github.com/repos/${ORG_NAME}/${REPO_NAME}/issues?state=open&per_page=100`);
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+        const allIssues = await response.json();
+        const candidates = allIssues.filter(issue => 
+            issue.title.includes('[INVITE]') && 
+            (issue.labels.some(label => label.name === 'à-examiner') || issue.state === 'open')
+        );
         
         if (candidates.length === 0) {
             container.innerHTML = '<p>✅ Aucune candidature en attente</p>';
