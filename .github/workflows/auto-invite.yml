@@ -4,6 +4,12 @@ on:
   issues:
     types: [opened, labeled]
   workflow_dispatch:
+
+permissions:
+  issues: write
+  contents: read
+  pull-requests: write
+
 jobs:
   review:
     if: github.event_name == 'issues' && contains(github.event.issue.title, '[INVITE]')
