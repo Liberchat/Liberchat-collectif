@@ -1,8 +1,6 @@
 <div align="center">
 
-![Liberchat-collectif Logo](data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCI+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSI5MCIgZmlsbD0iI2NjMDAwMCIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjQiLz48dGV4dCB4PSIxMDAiIHk9IjEzMCIgZm9udC1zaXplPSIxMjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IndoaXRlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSJib2xkIj7ijqY8L3RleHQ+PC9zdmc+)
-
-# 🚀 Liberchat-collectif Collectif - Système d'adhésion automatique
+# Ⓐ LiberChat Collectif
 
 **Solidarité • Action Directe • Logiciel Libre**
 
@@ -10,7 +8,7 @@
 
 ## 🌐 Accès direct
 
-**Formulaire de candidature :** https://liberchat-collectif.github.io/Liberchat-collectif
+**Formulaire de candidature :** https://liberchat.github.io/Liberchat-collectif
 
 ## ✊ Processus d'adhésion
 

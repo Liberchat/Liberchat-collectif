@@ -1,6 +1,6 @@
 // Configuration
-const ORG_NAME = 'Liberchat';
-const REPO_NAME = 'Liberchat-collectif';
+const ORG_NAME = "Liberchat";
+const REPO_NAME = "Liberchat-collectif";
 
 // Fonctions utilitaires
 function log(message) {
