@@ -76,8 +76,8 @@ async function loadCandidates() {
         }
         const allIssues = await response.json();
         const candidates = allIssues.filter(issue => 
-            issue.title.includes('[INVITE]') && 
-            (issue.labels.some(label => label.name === 'à-examiner') || issue.state === 'open')
+            issue.title.includes('[INVITE]') || 
+            issue.labels.some(label => ['invitation', 'à-examiner', 'approuvé', 'refusé'].includes(label.name))
         );
         
         if (candidates.length === 0) {
