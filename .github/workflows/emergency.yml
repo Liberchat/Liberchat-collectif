@@ -1,5 +1,7 @@
 name: Emergency Recovery
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
     inputs:
       action:
@@ -13,6 +15,7 @@ on:
         - 'reset-system'
 jobs:
   emergency:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3

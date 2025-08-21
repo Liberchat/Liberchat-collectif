@@ -1,5 +1,6 @@
 name: Process Candidature
 on:
+  push:
   issues:
     types: [opened, labeled]
   workflow_dispatch:
