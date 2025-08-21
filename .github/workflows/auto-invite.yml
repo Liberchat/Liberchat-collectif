@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   review:
-    if: github.event_name == 'issues' && contains(github.event.issue.title, '[INVITE]')
+    if: github.event_name == 'issues' && contains(github.event.issue.title, '[INVITE]') && github.event.action == 'opened'
     runs-on: ubuntu-latest
     steps:
     - name: Extract username
@@ -38,7 +38,7 @@ jobs:
           });
   
   invite:
-    if: github.event_name == 'issues' && contains(github.event.issue.labels.*.name, 'approuvé')
+    if: github.event_name == 'issues' && github.event.action == 'labeled' && contains(github.event.issue.labels.*.name, 'approuvé')
     runs-on: ubuntu-latest
     steps:
     - name: Extract username
@@ -72,7 +72,7 @@ jobs:
           });
   
   reject:
-    if: github.event_name == 'issues' && contains(github.event.issue.labels.*.name, 'refusé')
+    if: github.event_name == 'issues' && github.event.action == 'labeled' && contains(github.event.issue.labels.*.name, 'refusé')
     runs-on: ubuntu-latest
     steps:
     - name: Reject candidature
