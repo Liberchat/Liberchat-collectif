@@ -51,9 +51,11 @@ jobs:
         echo "name=${USERNAME}" >> $GITHUB_OUTPUT
     
     - name: Invite to org
+      env:
+        ORG_TOKEN: ${{ secrets.ORG_INVITE_TOKEN }}
       run: |
-        USER_ID=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/users/${{ steps.user.outputs.name }}" | jq .id)
-        curl -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/orgs/${{ github.repository_owner }}/invitations" -d "{\"invitee_id\": $USER_ID}"
+        USER_ID=$(curl -s -H "Authorization: Bearer ${ORG_TOKEN:-${{ secrets.GITHUB_TOKEN }}}" "https://api.github.com/users/${{ steps.user.outputs.name }}" | jq .id)
+        curl -X POST -H "Authorization: Bearer ${ORG_TOKEN:-${{ secrets.GITHUB_TOKEN }}}" "https://api.github.com/orgs/${{ github.repository_owner }}/invitations" -d "{\"invitee_id\": $USER_ID}"
     
     - name: Confirm invitation
       uses: actions/github-script@v6
