@@ -9,32 +9,33 @@ function log(message) {
     logs.innerHTML = `[${timestamp}] ${message}\n` + logs.innerHTML;
 }
 
-// Vérification des droits admin avec mot de passe
-function checkAdminAccess() {
-    // Hash SHA-256 du mot de passe admin
-    const adminPasswordHash = '629243ab00b9547e78839d3ac282cdbaa7b5a87c7e733e095f2db8f3f019252f'; // Mot de passe sécurisé
-    const userPassword = prompt('🔒 Mot de passe admin du collectif:');
+// Vérification des droits admin via organisation GitHub
+async function checkAdminAccess() {
+    const currentUser = prompt('👤 Votre pseudo GitHub:');
     
-    if (!userPassword) {
-        document.body.innerHTML = '<div style="text-align:center;padding:50px;color:#cc0000;font-size:2em;">❌ ACCÈS REFUSÉ<br><small>Mot de passe requis</small></div>';
+    if (!currentUser) {
+        document.body.innerHTML = '<div style="text-align:center;padding:50px;color:#cc0000;font-size:2em;">❌ ACCÈS REFUSÉ<br><small>Pseudo GitHub requis</small></div>';
         return false;
     }
     
-    // Hash du mot de passe saisi et vérification
-    crypto.subtle.digest('SHA-256', new TextEncoder().encode(userPassword))
-        .then(hashBuffer => {
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-            
-            if (hashHex === adminPasswordHash) {
-                log('✅ Accès admin accordé');
-                initializeAdmin();
-            } else {
-                document.body.innerHTML = '<div style="text-align:center;padding:50px;color:#cc0000;font-size:2em;">❌ ACCÈS REFUSÉ<br><small>Mot de passe incorrect</small></div>';
-            }
-        });
-    
-    return false; // Retour immédiat, vérification async
+    try {
+        // Vérifier si l'utilisateur est membre de l'organisation
+        const response = await fetch(`https://api.github.com/orgs/${ORG_NAME}/members/${currentUser}`);
+        
+        if (response.status === 200) {
+            log(`✅ Accès admin accordé à ${currentUser} (membre de ${ORG_NAME})`);
+            return true;
+        } else if (response.status === 404) {
+            document.body.innerHTML = '<div style="text-align:center;padding:50px;color:#cc0000;font-size:2em;">❌ ACCÈS REFUSÉ<br><small>Vous devez être membre de l\'organisation ${ORG_NAME}</small></div>';
+            return false;
+        } else {
+            document.body.innerHTML = '<div style="text-align:center;padding:50px;color:#cc0000;font-size:2em;">❌ ERREUR<br><small>Impossible de vérifier l\'appartenance</small></div>';
+            return false;
+        }
+    } catch (error) {
+        document.body.innerHTML = '<div style="text-align:center;padding:50px;color:#cc0000;font-size:2em;">❌ ERREUR<br><small>Problème de connexion API</small></div>';
+        return false;
+    }
 }
 
 // Chargement des statistiques
@@ -241,7 +242,9 @@ function initializeAdmin() {
 }
 
 // Initialisation
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     // Vérifier l'accès admin avant tout
-    checkAdminAccess();
+    if (await checkAdminAccess()) {
+        initializeAdmin();
+    }
 });
