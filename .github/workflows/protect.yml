@@ -1,10 +1,10 @@
 name: Protection Anti-Sabotage
 on:
   push:
-    branches: [main]
   pull_request:
   issues:
     types: [opened, edited]
+  workflow_dispatch:
 jobs:
   security-check:
     runs-on: ubuntu-latest
