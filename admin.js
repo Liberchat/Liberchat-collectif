@@ -9,6 +9,20 @@ function log(message) {
     logs.innerHTML = `[${timestamp}] ${message}\n` + logs.innerHTML;
 }
 
+// Vérification des droits admin
+function checkAdminAccess() {
+    const adminUsers = ['Liberchat', 'admin1', 'admin2']; // Ajoutez vos pseudos GitHub
+    const currentUser = prompt('Pseudo GitHub pour accès admin:');
+    
+    if (!currentUser || !adminUsers.includes(currentUser)) {
+        document.body.innerHTML = '<div style="text-align:center;padding:50px;color:#cc0000;font-size:2em;">❌ ACCÈS REFUSÉ<br><small>Réservé aux administrateurs du collectif</small></div>';
+        return false;
+    }
+    
+    log(`✅ Accès admin accordé à ${currentUser}`);
+    return true;
+}
+
 // Chargement des statistiques
 async function loadStats() {
     try {
@@ -190,6 +204,11 @@ function loadLogs() {
 
 // Initialisation
 document.addEventListener('DOMContentLoaded', function() {
+    // Vérifier l'accès admin avant tout
+    if (!checkAdminAccess()) {
+        return;
+    }
+    
     log('🚀 Interface admin initialisée');
     loadStats();
     loadCandidates();
