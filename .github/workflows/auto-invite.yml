@@ -8,7 +8,8 @@ on:
 permissions:
   issues: write
   contents: read
-  pull-requests: write
+  members: write
+  organization-administration: write
 
 jobs:
   review:
