@@ -11,8 +11,10 @@ jobs:
     steps:
     - name: Extract username
       id: user
+      env:
+        ISSUE_BODY: ${{ github.event.issue.body }}
       run: |
-        USERNAME=$(echo '${{ github.event.issue.body }}' | grep -o '@[a-zA-Z0-9_-]*' | head -1 | sed 's/@//')
+        USERNAME=$(printf '%s' "$ISSUE_BODY" | grep -o '@[a-zA-Z0-9_-]*' | head -1 | sed 's/@//' || echo "")
         echo "name=${USERNAME}" >> $GITHUB_OUTPUT
     
     - name: Add review label
@@ -36,8 +38,10 @@ jobs:
     steps:
     - name: Extract username
       id: user
+      env:
+        ISSUE_BODY: ${{ github.event.issue.body }}
       run: |
-        USERNAME=$(echo '${{ github.event.issue.body }}' | grep -o '@[a-zA-Z0-9_-]*' | head -1 | sed 's/@//')
+        USERNAME=$(printf '%s' "$ISSUE_BODY" | grep -o '@[a-zA-Z0-9_-]*' | head -1 | sed 's/@//' || echo "")
         echo "name=${USERNAME}" >> $GITHUB_OUTPUT
     
     - name: Invite to org
