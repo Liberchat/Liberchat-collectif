@@ -1,0 +1,102 @@
+name: Protection Anti-Sabotage
+on:
+  push:
+    branches: [main]
+  pull_request:
+  issues:
+    types: [opened, edited]
+jobs:
+  security-check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Check critical files
+      run: |
+        CRITICAL_FILES=("index.html" "invite.js" ".github/workflows/auto-invite.yml")
+        MISSING=""
+        
+        for file in "${CRITICAL_FILES[@]}"; do
+          if [ ! -f "$file" ]; then
+            MISSING="$MISSING $file"
+          fi
+        done
+        
+        if [ -n "$MISSING" ]; then
+          echo "❌ ALERTE: Fichiers critiques supprimés:$MISSING"
+          exit 1
+        fi
+        echo "✅ Tous les fichiers critiques présents"
+    
+    - name: Detect suspicious changes
+      run: |
+        if git diff --name-only HEAD~1 2>/dev/null | grep -E "\.(yml|js|html)$"; then
+          echo "⚠️ Modifications détectées sur fichiers sensibles"
+          git diff --stat HEAD~1 || true
+        fi
+    
+    - name: Check malicious patterns
+      run: |
+        MALICIOUS_PATTERNS=("rm -rf" "curl.*evil" "wget.*malware" "base64.*decode")
+        
+        for pattern in "${MALICIOUS_PATTERNS[@]}"; do
+          if grep -r "$pattern" . --exclude-dir=.git 2>/dev/null; then
+            echo "❌ ALERTE: Pattern suspect détecté: $pattern"
+            exit 1
+          fi
+        done
+        echo "✅ Aucun pattern malveillant détecté"
+    
+    - name: Validate workflow integrity
+      run: |
+        if [ -f ".github/workflows/auto-invite.yml" ]; then
+          if ! grep -q "invitations" .github/workflows/auto-invite.yml; then
+            echo "❌ ALERTE: Workflow d'invitation corrompu"
+            exit 1
+          fi
+        fi
+        echo "✅ Workflows intègres"
+  
+  spam-protection:
+    if: github.event_name == 'issues'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check spam patterns
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const body = context.payload.issue.body || '';
+          const title = context.payload.issue.title || '';
+          
+          const spamPatterns = [
+            /(.)\1{20,}/,  // Répétition excessive
+            /https?:\/\/[^\s]*(?:bit\.ly|tinyurl|t\.co)/,  // URLs suspectes
+            /[A-Z]{50,}/,  // CAPS LOCK excessif
+            /@[a-zA-Z0-9_-]{1,2}$/  // Pseudo trop court
+          ];
+          
+          for (const pattern of spamPatterns) {
+            if (pattern.test(body) || pattern.test(title)) {
+              await github.rest.issues.createComment({
+                ...context.repo,
+                issue_number: context.issue.number,
+                body: '🚫 **SPAM DÉTECTÉ** - Issue fermée automatiquement'
+              });
+              
+              await github.rest.issues.update({
+                ...context.repo,
+                issue_number: context.issue.number,
+                state: 'closed'
+              });
+              
+              await github.rest.issues.addLabels({
+                ...context.repo,
+                issue_number: context.issue.number,
+                labels: ['spam']
+              });
+              
+              return;
+            }
+          }
+          
+          console.log('✅ Issue validée - Pas de spam détecté');

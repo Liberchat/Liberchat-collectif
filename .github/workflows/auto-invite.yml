@@ -1,0 +1,74 @@
+name: Process Candidature
+on:
+  issues:
+    types: [opened, labeled]
+jobs:
+  review:
+    if: contains(github.event.issue.title, '[INVITE]')
+    runs-on: ubuntu-latest
+    steps:
+    - name: Extract username
+      id: user
+      run: echo "name=$(echo '${{ github.event.issue.body }}' | grep -o '@[a-zA-Z0-9_-]*' | head -1 | sed 's/@//')" >> $GITHUB_OUTPUT
+    
+    - name: Add review label
+      uses: actions/github-script@v6
+      with:
+        script: |
+          await github.rest.issues.addLabels({
+            ...context.repo,
+            issue_number: context.issue.number,
+            labels: ['à-examiner']
+          });
+          await github.rest.issues.createComment({
+            ...context.repo,
+            issue_number: context.issue.number,
+            body: '📝 **Candidature reçue !**\n\nCette candidature va être examinée par l\'\u00e9quipe.\n\n**Pour valider:** Ajoutez le label `approuvé`\n**Pour refuser:** Ajoutez le label `refusé`'
+          });
+  
+  invite:
+    if: contains(github.event.issue.labels.*.name, 'approuvé')
+    runs-on: ubuntu-latest
+    steps:
+    - name: Extract username
+      id: user
+      run: echo "name=$(echo '${{ github.event.issue.body }}' | grep -o '@[a-zA-Z0-9_-]*' | head -1 | sed 's/@//')" >> $GITHUB_OUTPUT
+    
+    - name: Invite to org
+      run: |
+        USER_ID=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/users/${{ steps.user.outputs.name }}" | jq .id)
+        curl -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/orgs/${{ github.repository_owner }}/invitations" -d "{\"invitee_id\": $USER_ID}"
+    
+    - name: Confirm invitation
+      uses: actions/github-script@v6
+      with:
+        script: |
+          await github.rest.issues.createComment({
+            ...context.repo,
+            issue_number: context.issue.number,
+            body: '✅ **APPROUVÉ !** Invitation envoyée à @${{ steps.user.outputs.name }}'
+          });
+          await github.rest.issues.update({
+            ...context.repo,
+            issue_number: context.issue.number,
+            state: 'closed'
+          });
+  
+  reject:
+    if: contains(github.event.issue.labels.*.name, 'refusé')
+    runs-on: ubuntu-latest
+    steps:
+    - name: Reject candidature
+      uses: actions/github-script@v6
+      with:
+        script: |
+          await github.rest.issues.createComment({
+            ...context.repo,
+            issue_number: context.issue.number,
+            body: '❌ **REFUSÉ** - Candidature non retenue après examen.'
+          });
+          await github.rest.issues.update({
+            ...context.repo,
+            issue_number: context.issue.number,
+            state: 'closed'
+          });

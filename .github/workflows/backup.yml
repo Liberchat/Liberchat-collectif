@@ -1,0 +1,44 @@
+name: Backup & Security
+on:
+  push:
+  schedule:
+    - cron: '0 0 * * *'
+    - cron: '0 */6 * * *'
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Create full backup
+      run: |
+        DATE=$(date +%Y%m%d-%H%M)
+        git bundle create "backup-full-$DATE.bundle" --all
+        tar -czf "repo-snapshot-$DATE.tar.gz" .
+        echo "✅ Backup complet: $DATE" >> backup.log
+    
+    - name: Create members backup
+      run: |
+        DATE=$(date +%Y%m%d-%H%M)
+        curl -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+             "https://api.github.com/orgs/${{ github.repository_owner }}/members" > "members-$DATE.json"
+        echo "✅ Liste membres sauvée: $DATE" >> backup.log
+    
+    - name: Upload backups
+      uses: actions/upload-artifact@v3
+      with:
+        name: backup-${{ github.run_number }}
+        path: |
+          backup-*.bundle
+          repo-snapshot-*.tar.gz
+          members-*.json
+          backup.log
+        retention-days: 365
+    
+    - name: Mirror to external repo
+      run: |
+        git remote add mirror https://github.com/${{ github.repository_owner }}/LiberChat-Backup.git 2>/dev/null || true
+        git push mirror --all --force 2>/dev/null || echo "⚠️ Miroir externe non configuré"

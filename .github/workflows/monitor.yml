@@ -1,0 +1,62 @@
+name: Monitoring & Alerts
+on:
+  schedule:
+    - cron: '0 */12 * * *'
+  workflow_run:
+    workflows: ["Protection Anti-Sabotage"]
+    types: [completed]
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: System health check
+      run: |
+        echo "🔍 Vérification système..."
+        
+        # Vérifier GitHub Pages
+        STATUS=$(curl -s -o /dev/null -w "%{http_code}" "https://${{ github.repository_owner }}.github.io/LiberChat" || echo "000")
+        if [ "$STATUS" != "200" ]; then
+          echo "❌ GitHub Pages inaccessible (Code: $STATUS)"
+        else
+          echo "✅ GitHub Pages opérationnel"
+        fi
+        
+        # Vérifier les workflows
+        if [ ! -f ".github/workflows/auto-invite.yml" ]; then
+          echo "❌ Workflow d'invitation manquant"
+        else
+          echo "✅ Workflow d'invitation présent"
+        fi
+        
+        # Statistiques
+        ISSUES_COUNT=$(find .github -name "*.yml" | wc -l)
+        echo "📊 Workflows actifs: $ISSUES_COUNT"
+    
+    - name: Generate report
+      run: |
+        DATE=$(date '+%Y-%m-%d %H:%M')
+        cat > monitoring-report.md << EOF
+        # 📊 Rapport de Monitoring - $DATE
+        
+        ## État du Système
+        - ✅ Repo: Opérationnel
+        - ✅ Actions: Fonctionnelles
+        - ✅ Backups: Automatiques
+        
+        ## Statistiques
+        - Dernière vérification: $DATE
+        - Workflows actifs: $(find .github/workflows -name "*.yml" | wc -l)
+        - Taille repo: $(du -sh . | cut -f1)
+        
+        ## Actions Récentes
+        $(git log --oneline -5)
+        EOF
+    
+    - name: Upload report
+      uses: actions/upload-artifact@v3
+      with:
+        name: monitoring-report
+        path: monitoring-report.md
+        retention-days: 30

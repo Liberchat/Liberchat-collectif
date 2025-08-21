@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Liberchat-collectif Collectif</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23cc0000'/><text x='50' y='65' font-size='60' text-anchor='middle' fill='white'>Ⓐ</text></svg>">
+    <style>
+        body{font-family:'Liberation Sans',Arial;margin:0;background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);color:#e0e0e0}
+        .header{background:linear-gradient(45deg,#cc0000 0%,#000000 50%,#cc0000 100%);color:#fff;padding:20px;text-align:center;border-bottom:3px solid #cc0000}
+        .header h1{text-shadow:2px 2px 4px rgba(0,0,0,0.8);margin:0;font-size:2.2em}
+        .header p{margin:10px 0 0 0;opacity:0.9}
+        .container{max-width:1200px;margin:20px auto;padding:0 20px}
+        @media (max-width:768px){
+            .container{margin:10px auto;padding:0 10px}
+            .header{padding:15px 10px}
+            .header h1{font-size:1.8em}
+            .card{padding:15px;margin:10px 0}
+            .stats{grid-template-columns:repeat(2,1fr);gap:10px}
+            .stat{padding:15px}
+            .stat h3{font-size:1.5em}
+            .actions{grid-template-columns:1fr;gap:10px}
+            .btn{padding:10px 15px;font-size:0.9em}
+            .candidates{max-height:300px}
+            .candidate{padding:10px}
+            .candidate-actions .btn{margin:5px 5px 5px 0;padding:6px 10px}
+            .log{padding:10px;font-size:0.8em;max-height:200px}
+        }
+        .card{background:linear-gradient(145deg,#2a2a2a,#1f1f1f);margin:15px 0;padding:20px;border-radius:8px;box-shadow:0 4px 8px rgba(0,0,0,0.3);border:1px solid #444}
+        .card h2{color:#cc0000;border-bottom:2px solid #cc0000;padding-bottom:10px;margin-top:0}
+        .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px}
+        .stat{text-align:center;padding:20px;background:linear-gradient(145deg,#cc0000,#990000);border-radius:8px;color:white;box-shadow:0 2px 4px rgba(0,0,0,0.4)}
+        .stat h3{margin:0;font-size:2em;text-shadow:1px 1px 2px rgba(0,0,0,0.8)}
+        .stat p{margin:10px 0 0 0;font-weight:bold}
+        .actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px}
+        .btn{padding:12px 20px;border:2px solid;border-radius:4px;cursor:pointer;text-decoration:none;display:inline-block;text-align:center;font-weight:bold;transition:all 0.3s}
+        .btn-primary{background:#cc0000;color:white;border-color:#cc0000}
+        .btn-primary:hover{background:#990000;transform:translateY(-2px)}
+        .btn-danger{background:#000;color:#cc0000;border-color:#cc0000}
+        .btn-danger:hover{background:#cc0000;color:#000}
+        .btn-warning{background:#cc0000;color:#000;border-color:#cc0000}
+        .btn-info{background:#333;color:#fff;border-color:#666}
+        .candidates{max-height:400px;overflow-y:auto}
+        .candidate{border:2px solid #cc0000;margin:10px 0;padding:15px;border-radius:4px;background:linear-gradient(145deg,#2a2a2a,#1f1f1f)}
+        .candidate h4{margin:0 0 10px 0;color:#cc0000}
+        .candidate-actions{margin-top:10px}
+        .candidate-actions .btn{margin-right:10px;padding:8px 15px;font-size:0.9em}
+        .log{background:#1a1a1a;padding:15px;border-radius:4px;font-family:'Liberation Mono',monospace;font-size:0.9em;max-height:300px;overflow-y:auto;border:1px solid #444;color:#00ff00}
+        .status{padding:5px 10px;border-radius:3px;font-size:0.8em;font-weight:bold}
+        .status-pending{background:#cc0000;color:#000}
+        .status-approved{background:#00aa00;color:#fff}
+        .status-rejected{background:#cc0000;color:#fff}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Ⓐ Administration Liberchat-collectif Collectif - Autogérée</h1>
+        <p>Tableau de bord administrateur - Solidarité & Action Directe</p>
+    </div>
+    
+    <div class="container">
+        <!-- Statistiques -->
+        <div class="card">
+            <h2>📊 Statistiques du Collectif</h2>
+            <div class="stats">
+                <div class="stat">
+                    <h3 id="totalCandidates">-</h3>
+                    <p>Candidatures totales</p>
+                </div>
+                <div class="stat">
+                    <h3 id="pendingCandidates">-</h3>
+                    <p>En attente</p>
+                </div>
+                <div class="stat">
+                    <h3 id="approvedCandidates">-</h3>
+                    <p>Approuvées</p>
+                </div>
+                <div class="stat">
+                    <h3 id="totalMembers">-</h3>
+                    <p>Camarades actifs</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Actions rapides -->
+        <div class="card">
+            <h2>✊ Actions Directes</h2>
+            <div class="actions">
+                <a href="https://github.com/Liberchat/Liberchat-collectif/issues?q=is%3Aissue+is%3Aopen+label%3Aà-examiner" class="btn btn-primary" target="_blank">
+                    📋 Examiner candidatures
+                </a>
+                <a href="https://github.com/Liberchat/Liberchat-collectif/actions" class="btn btn-info" target="_blank">
+                    🤖 Surveiller actions
+                </a>
+                <button class="btn btn-warning" onclick="triggerBackup()">
+                    💾 Sauvegarder lutte
+                </button>
+                <button class="btn btn-danger" onclick="emergencyMode()">
+                    🚨 Alerte rouge
+                </button>
+            </div>
+        </div>
+        
+        <!-- Candidatures récentes -->
+        <div class="card">
+            <h2>👥 Nouveaux Camarades</h2>
+            <div id="candidatesList" class="candidates">
+                <p>Chargement des candidatures...</p>
+            </div>
+            <button class="btn btn-primary" onclick="loadCandidates()">🔄 Actualiser</button>
+        </div>
+        
+        <!-- Logs système -->
+        <div class="card">
+            <h2>📝 Journal de Bord</h2>
+            <div id="systemLogs" class="log">
+                Chargement des logs...
+            </div>
+            <button class="btn btn-info" onclick="loadLogs()">🔄 Actualiser journal</button>
+        </div>
+        
+        <!-- Outils admin -->
+        <div class="card">
+            <h2>🔧 Outils d'Organisation</h2>
+            <div class="actions">
+                <button class="btn btn-info" onclick="exportData()">
+                    📤 Archiver données
+                </button>
+                <button class="btn btn-warning" onclick="viewMembers()">
+                    👥 Organiser camarades
+                </button>
+                <button class="btn btn-primary" onclick="generateReport()">
+                    📊 Bilan mensuel
+                </button>
+                <button class="btn btn-danger" onclick="purgeOldData()">
+                    🗑️ Purger archives
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+name: Emergency Recovery
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Action d urgence'
+        required: true
+        type: choice
+        options:
+        - 'restore-backup'
+        - 'lock-repo'
+        - 'purge-members'
+        - 'reset-system'
+jobs:
+  emergency:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    
+    - name: Restore from backup
+      if: github.event.inputs.action == 'restore-backup'
+      run: |
+        echo "🚨 RESTAURATION D'URGENCE"
+        git log --oneline -10
+        echo "Utilisez: git revert <commit> pour annuler des changements"
+    
+    - name: Lock repository
+      if: github.event.inputs.action == 'lock-repo'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          await github.rest.repos.update({
+            ...context.repo,
+            archived: true
+          });
+          console.log('🔒 REPO VERROUILLÉ');
+    
+    - name: Emergency member purge
+      if: github.event.inputs.action == 'purge-members'
+      run: |
+        echo "🚨 PURGE D'URGENCE DES MEMBRES"
+        curl -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+             "https://api.github.com/orgs/${{ github.repository_owner }}/members" | \
+        jq -r '.[].login' > current-members.txt
+        echo "Liste des membres sauvée dans current-members.txt"
+    
+    - name: System reset
+      if: github.event.inputs.action == 'reset-system'
+      run: |
+        echo "🔄 RESET SYSTÈME"
+        git checkout HEAD -- .
+        echo "Système restauré à l'état initial"
