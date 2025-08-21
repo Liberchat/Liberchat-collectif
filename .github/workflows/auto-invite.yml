@@ -20,7 +20,7 @@ jobs:
       env:
         ISSUE_BODY: ${{ github.event.issue.body }}
       run: |
-        USERNAME=$(printf '%s' "$ISSUE_BODY" | grep -o '@[a-zA-Z0-9_-]*' | head -1 | sed 's/@//' || echo "")
+        USERNAME=$(printf '%s' "$ISSUE_BODY" | grep -oE '@[a-zA-Z0-9_-]+' | head -1 | sed 's/@//' || echo "unknown")
         echo "name=${USERNAME}" >> $GITHUB_OUTPUT
     
     - name: Add review label
@@ -47,13 +47,13 @@ jobs:
       env:
         ISSUE_BODY: ${{ github.event.issue.body }}
       run: |
-        USERNAME=$(printf '%s' "$ISSUE_BODY" | grep -o '@[a-zA-Z0-9_-]*' | head -1 | sed 's/@//' || echo "")
+        USERNAME=$(printf '%s' "$ISSUE_BODY" | grep -oE '@[a-zA-Z0-9_-]+' | head -1 | sed 's/@//' || echo "unknown")
         echo "name=${USERNAME}" >> $GITHUB_OUTPUT
     
     - name: Invite to org
       run: |
-        echo "Invitation simulée pour ${{ steps.user.outputs.name }}"
-        echo "Note: Invitation manuelle requise par un admin de l'organisation"
+        USER_ID=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/users/${{ steps.user.outputs.name }}" | jq .id)
+        curl -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/orgs/${{ github.repository_owner }}/invitations" -d "{\"invitee_id\": $USER_ID}"
     
     - name: Confirm invitation
       uses: actions/github-script@v6
