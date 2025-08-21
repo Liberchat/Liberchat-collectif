@@ -8,8 +8,7 @@ on:
 permissions:
   issues: write
   contents: read
-  members: write
-  organization-administration: write
+  actions: write
 
 jobs:
   review:
@@ -53,8 +52,8 @@ jobs:
     
     - name: Invite to org
       run: |
-        USER_ID=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/users/${{ steps.user.outputs.name }}" | jq .id)
-        curl -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/orgs/${{ github.repository_owner }}/invitations" -d "{\"invitee_id\": $USER_ID}"
+        echo "Invitation simulée pour ${{ steps.user.outputs.name }}"
+        echo "Note: Invitation manuelle requise par un admin de l'organisation"
     
     - name: Confirm invitation
       uses: actions/github-script@v6
