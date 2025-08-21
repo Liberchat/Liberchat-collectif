@@ -11,8 +11,8 @@ function log(message) {
 
 // Vérification des droits admin avec mot de passe
 function checkAdminAccess() {
-    // Hash SHA-256 du mot de passe (changez ce hash pour votre mot de passe)
-    const adminPasswordHash = 'a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3'; // Exemple: 'hello'
+    // Hash SHA-256 du mot de passe admin
+    const adminPasswordHash = '629243ab00b9547e78839d3ac282cdbaa7b5a87c7e733e095f2db8f3f019252f'; // Mot de passe sécurisé
     const userPassword = prompt('🔒 Mot de passe admin du collectif:');
     
     if (!userPassword) {
