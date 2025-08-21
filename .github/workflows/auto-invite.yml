@@ -20,7 +20,7 @@ jobs:
       env:
         ISSUE_BODY: ${{ github.event.issue.body }}
       run: |
-        USERNAME=$(printf '%s' "$ISSUE_BODY" | grep -oE '@[a-zA-Z0-9_-]+' | head -1 | sed 's/@//' || echo "unknown")
+        USERNAME=$(printf '%s' "$ISSUE_BODY" | grep -A1 "Pseudo GitHub" | grep -oE '@[a-zA-Z0-9_-]+' | head -1 | sed 's/@//' || echo "unknown")
         echo "name=${USERNAME}" >> $GITHUB_OUTPUT
     
     - name: Add review label
@@ -47,7 +47,7 @@ jobs:
       env:
         ISSUE_BODY: ${{ github.event.issue.body }}
       run: |
-        USERNAME=$(printf '%s' "$ISSUE_BODY" | grep -oE '@[a-zA-Z0-9_-]+' | head -1 | sed 's/@//' || echo "unknown")
+        USERNAME=$(printf '%s' "$ISSUE_BODY" | grep -A1 "Pseudo GitHub" | grep -oE '@[a-zA-Z0-9_-]+' | head -1 | sed 's/@//' || echo "unknown")
         echo "name=${USERNAME}" >> $GITHUB_OUTPUT
     
     - name: Invite to org
