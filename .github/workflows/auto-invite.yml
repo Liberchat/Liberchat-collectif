@@ -11,7 +11,9 @@ jobs:
     steps:
     - name: Extract username
       id: user
-      run: echo "name=$(echo '${{ github.event.issue.body }}' | grep -o '@[a-zA-Z0-9_-]*' | head -1 | sed 's/@//')" >> $GITHUB_OUTPUT
+      run: |
+        USERNAME=$(echo '${{ github.event.issue.body }}' | grep -o '@[a-zA-Z0-9_-]*' | head -1 | sed 's/@//')
+        echo "name=${USERNAME}" >> $GITHUB_OUTPUT
     
     - name: Add review label
       uses: actions/github-script@v6
@@ -25,7 +27,7 @@ jobs:
           await github.rest.issues.createComment({
             ...context.repo,
             issue_number: context.issue.number,
-            body: '📝 **Candidature reçue !**\n\nCette candidature va être examinée par l\'\u00e9quipe.\n\n**Pour valider:** Ajoutez le label `approuvé`\n**Pour refuser:** Ajoutez le label `refusé`'
+            body: '📝 **Candidature reçue !**\n\nCette candidature va être examinée par l\'équipe.\n\n**Pour valider:** Ajoutez le label `approuvé`\n**Pour refuser:** Ajoutez le label `refusé`'
           });
   
   invite:
@@ -34,7 +36,9 @@ jobs:
     steps:
     - name: Extract username
       id: user
-      run: echo "name=$(echo '${{ github.event.issue.body }}' | grep -o '@[a-zA-Z0-9_-]*' | head -1 | sed 's/@//')" >> $GITHUB_OUTPUT
+      run: |
+        USERNAME=$(echo '${{ github.event.issue.body }}' | grep -o '@[a-zA-Z0-9_-]*' | head -1 | sed 's/@//')
+        echo "name=${USERNAME}" >> $GITHUB_OUTPUT
     
     - name: Invite to org
       run: |
