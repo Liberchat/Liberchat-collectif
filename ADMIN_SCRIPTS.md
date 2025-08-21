@@ -45,4 +45,4 @@ grep "adminUsers" admin.js
 
 ---
 
-**⚠️ Réservé aux super-admins du collectif**
+**⚠️ Réservé aux admins autogérés du collectif**

@@ -18,8 +18,8 @@ function checkAdminAccess() {
         return false;
     }
     
-    // Liste des admins autorisés
-    const adminUsers = ['Liberchat', 'AnARCHIS12', 'admin1', 'admin2'];
+    // Admins autogérés du collectif
+    const adminUsers = ['Liberchat', 'AnARCHIS12'];
     
     if (adminUsers.includes(currentUser)) {
         log(`✅ Accès admin accordé à ${currentUser}`);
