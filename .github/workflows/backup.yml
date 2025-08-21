@@ -17,7 +17,11 @@ jobs:
       run: |
         DATE=$(date +%Y%m%d-%H%M)
         git bundle create "backup-full-$DATE.bundle" --all
-        tar -czf "repo-snapshot-$DATE.tar.gz" --exclude='.git' --exclude='*.tar.gz' .
+        mkdir -p /tmp/backup
+        cp -r . /tmp/backup/repo 2>/dev/null || true
+        cd /tmp/backup && tar -czf "repo-snapshot-$DATE.tar.gz" repo
+        mv "repo-snapshot-$DATE.tar.gz" $GITHUB_WORKSPACE/
+        cd $GITHUB_WORKSPACE
         echo "✅ Backup complet: $DATE" >> backup.log
     
     - name: Create members backup
