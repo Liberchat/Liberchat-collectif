@@ -9,18 +9,30 @@ function log(message) {
     logs.innerHTML = `[${timestamp}] ${message}\n` + logs.innerHTML;
 }
 
-// Vérification des droits admin
-function checkAdminAccess() {
-    const adminUsers = ['Liberchat', 'admin1', 'admin2']; // Ajoutez vos pseudos GitHub
+// Vérification des droits admin via GitHub API
+async function checkAdminAccess() {
     const currentUser = prompt('Pseudo GitHub pour accès admin:');
     
-    if (!currentUser || !adminUsers.includes(currentUser)) {
-        document.body.innerHTML = '<div style="text-align:center;padding:50px;color:#cc0000;font-size:2em;">❌ ACCÈS REFUSÉ<br><small>Réservé aux administrateurs du collectif</small></div>';
+    if (!currentUser) {
+        document.body.innerHTML = '<div style="text-align:center;padding:50px;color:#cc0000;font-size:2em;">❌ ACCÈS REFUSÉ<br><small>Pseudo requis</small></div>';
         return false;
     }
     
-    log(`✅ Accès admin accordé à ${currentUser}`);
-    return true;
+    try {
+        // Vérifier si l'utilisateur est membre de l'organisation
+        const response = await fetch(`https://api.github.com/orgs/${ORG_NAME}/members/${currentUser}`);
+        
+        if (response.status === 200) {
+            log(`✅ Accès admin accordé à ${currentUser} (membre de ${ORG_NAME})`);
+            return true;
+        } else {
+            document.body.innerHTML = '<div style="text-align:center;padding:50px;color:#cc0000;font-size:2em;">❌ ACCÈS REFUSÉ<br><small>Vous devez être membre de l\'organisation ${ORG_NAME}</small></div>';
+            return false;
+        }
+    } catch (error) {
+        document.body.innerHTML = '<div style="text-align:center;padding:50px;color:#cc0000;font-size:2em;">❌ ERREUR<br><small>Impossible de vérifier l\'accès</small></div>';
+        return false;
+    }
 }
 
 // Chargement des statistiques
@@ -203,9 +215,9 @@ function loadLogs() {
 }
 
 // Initialisation
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     // Vérifier l'accès admin avant tout
-    if (!checkAdminAccess()) {
+    if (!(await checkAdminAccess())) {
         return;
     }
     
