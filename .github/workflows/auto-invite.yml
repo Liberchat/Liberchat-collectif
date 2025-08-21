@@ -2,9 +2,10 @@ name: Process Candidature
 on:
   issues:
     types: [opened, labeled]
+  workflow_dispatch:
 jobs:
   review:
-    if: contains(github.event.issue.title, '[INVITE]')
+    if: github.event_name == 'issues' && contains(github.event.issue.title, '[INVITE]')
     runs-on: ubuntu-latest
     steps:
     - name: Extract username
@@ -27,7 +28,7 @@ jobs:
           });
   
   invite:
-    if: contains(github.event.issue.labels.*.name, 'approuvé')
+    if: github.event_name == 'issues' && contains(github.event.issue.labels.*.name, 'approuvé')
     runs-on: ubuntu-latest
     steps:
     - name: Extract username
@@ -55,7 +56,7 @@ jobs:
           });
   
   reject:
-    if: contains(github.event.issue.labels.*.name, 'refusé')
+    if: github.event_name == 'issues' && contains(github.event.issue.labels.*.name, 'refusé')
     runs-on: ubuntu-latest
     steps:
     - name: Reject candidature
